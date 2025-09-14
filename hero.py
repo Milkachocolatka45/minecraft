@@ -38,16 +38,17 @@ class Hero:
     def turn_right(self):
         self.hero.setH((self.hero.getH() - 5) % 360)
 
-    def move_to(self):
+    def move_to(self, angle):
         """Обираємо як рухати гравця в залежності від режиму гри"""
         if self.game_mode:
-            self.just.move()
+            self.just_move(angle)
         else:
-            self.try_move()
+            self.try_move(angle)
 
-    def just_move(self):
+    def just_move(self, angle):
         """Рух гравця в режимі спостерігача"""
-        pass
+        pos = self.look_at(angle)
+        self.hero.setPos(pos)
 
     def try_mpve(self):
         """Рух гравця в ігровому режимі"""
@@ -88,8 +89,39 @@ class Hero:
            return -1, -1
        else:
            return 0, -1
+       
+    def look_at(self, angle):
+        x = round(self.hero.getX())
+        y = round(self.hero.getY())
+        z = round(self.hero.getZ())
 
 
+        dx, dy = self.check_dir(angle)
+
+        return x + dx, y + dy, z
+    
+    def forward(self):
+        angle = self.hero.getH() % 360
+        self.move_to(angle)
+
+    def left(self):
+        angle = (self.hero.getH() + 90) % 360
+        self.move_to(angle)
+
+    def right(self):
+        angle = (self.hero.getH() - 90) % 360
+        self.move_to(angle)
+
+    def back(self):
+        angle = (self.hero.getH() - 180) % 360
+        self.move_to(angle)
+
+    def up(self):
+        if self.game_mode:
+            self.hero.setZ(self.hero.getZ() + 1)
+
+    def down(self):
+        self.hero.setZ(self.hero.getZ() - 1)
 
     def accept_events(self):
         base.accept("c", self.switch_camera)
@@ -97,3 +129,10 @@ class Hero:
         base.accept("s" + "-repeat", self.turn_left)
         base.accept("d", self.turn_right)
         base.accept("d" + "-repeat", self.turn_right)
+        base.accept("t", self.forward)
+        base.accept("t" + "-repeat", self.forward) 
+        base.accept("f", self.left) 
+        base.accept("h", self.right) 
+        base.accept("g", self.back)
+        base.accept("w", self.down)
+        base.accept("e", self.up)
