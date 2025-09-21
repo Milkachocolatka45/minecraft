@@ -32,6 +32,12 @@ class Hero:
         else:
             self.camera_bind()
 
+    def change_mode(self):
+        if self.game_mode:
+            self.game_mode = False
+        else:
+            self.game_mode = True
+
     def turn_left(self):
         self.hero.setH((self.hero.getH() + 5) % 360)
 
@@ -50,9 +56,18 @@ class Hero:
         pos = self.look_at(angle)
         self.hero.setPos(pos)
 
-    def try_mpve(self):
+    def try_move(self, angle):
         """Рух гравця в ігровому режимі"""
-        pass
+        pos = self.look_at(angle)
+        print(pos)
+        if self.land.is_empty(pos):
+            print(True)
+            pos = self.land.find_highest_empty(pos)
+            self.hero.setPos(pos)
+        else:
+            pos = pos[0], pos[1], pos[2] + 1
+            if self.land.is_empty(pos):
+                self.hero.setPos(pos)
 
     def check_dir(self, angle):
        ''' повертає заокруглені зміни координат X, Y,
@@ -123,6 +138,22 @@ class Hero:
     def down(self):
         self.hero.setZ(self.hero.getZ() - 1)
 
+    def built(self):
+        angle = self.hero.getH() % 360
+        pos = self.look_at(angle)
+        if self.game_mode:
+            self.land.add_block(pos)
+        else:
+            self.land.built_block(pos)
+
+    def destroy(self):
+        angle = self.hero.getH() % 360
+        pos = self.look_at(angle)
+        if self.game_mode:
+            self.land.destroy_block(pos)
+        else:
+            self.land.del_destroy_block(pos)
+
     def accept_events(self):
         base.accept("c", self.switch_camera)
         base.accept("s", self.turn_left)
@@ -132,7 +163,11 @@ class Hero:
         base.accept("t", self.forward)
         base.accept("t" + "-repeat", self.forward) 
         base.accept("f", self.left) 
-        base.accept("h", self.right) 
+        base.accept("h" + "-repeat", self.right) 
         base.accept("g", self.back)
         base.accept("w", self.down)
         base.accept("e", self.up)
+        base.accept("z", self.change_mode)
+        base.accept("y", self.built)
+        base.accept("u", self.destroy)\
+        
