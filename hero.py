@@ -152,11 +152,11 @@ class Hero:
         if self.game_mode:
             self.land.destroy_block(pos)
         else:
-            self.land.del_destroy_block(pos)
+            self.land.del_block_from(pos)
 
     def accept_events(self):
         base.accept("c", self.switch_camera)
-        base.accept("s", self.turn_left)
+        base.accept("s" + "-repeat", self.turn_left)
         base.accept("s" + "-repeat", self.turn_left)
         base.accept("d", self.turn_right)
         base.accept("d" + "-repeat", self.turn_right)
@@ -164,10 +164,11 @@ class Hero:
         base.accept("t" + "-repeat", self.forward) 
         base.accept("f", self.left) 
         base.accept("h" + "-repeat", self.right) 
-        base.accept("g", self.back)
-        base.accept("w", self.down)
-        base.accept("e", self.up)
+        base.accept("g" + "-repeat", self.back)
+        base.accept("w"+ "-repeat", self.down)
+        base.accept("e" + "-repeat", self.up)
         base.accept("z", self.change_mode)
         base.accept("y", self.built)
-        base.accept("u", self.destroy)\
-        
+        base.accept("u", self.destroy)
+        base.accept("a", self.land.load_map_from_file)
+        base.accept("q", self.land.save_map)
